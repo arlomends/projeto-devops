@@ -5,6 +5,7 @@
   
   tasks:
     - name: Atualizar cache do repositório
+
       apt:
         update_cache: yes
 
@@ -48,3 +49,28 @@
       service:
         name: nginx
         state: restarted
+
+
+    - name: Adicionar repositório oficial do Zabbix
+      apt_repository:
+        repo: deb https://repo.zabbix.com/zabbix/6.0/ubuntu focal main
+        state: present
+        update_cache: yes
+
+    - name: Instalar Zabbix Agent
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: Configurar o Zabbix Agent (Server IP)
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^Server='
+        line: 'Server=127.0.0.1,SEU_IP_ZABBIX_AQUI' # Coloque o IP do seu servidor Zabbix
+        state: present
+
+    - name: Garantir que o Zabbix Agent esteja rodando
+      service:
+        name: zabbix-agent
+        state: started
+        enabled: yes
