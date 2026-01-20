@@ -1,25 +1,32 @@
-# Automação de Infraestrutura: Proxy Reverso com Ansible & Docker
+# Laboratório de Infraestrutura Ágil: Ansible, Docker, SQL & Zabbix
 
-Este projeto demonstra a automação completa do provisionamento de um servidor web utilizando cultura **IaC (Infrastructure as Code)**.
+Este repositório contém a automação completa para o provisionamento de um ambiente de sistemas distribuídos, focado em alta disponibilidade, monitoramento e persistência de dados. O projeto demonstra a capacidade de orquestrar múltiplos serviços garantindo isolamento de rede e segurança.
 
-##  Tecnologias Utilizadas
-* **Ansible**: Orquestração e configuração do servidor.
-* **Docker**: Conteinerização da aplicação (Nginx Hello World).
-* **Nginx**: Configurado como Proxy Reverso.
-* **Linux (Ubuntu)**: Sistema operacional base.
+##  Tecnologias e Implementações
 
-##  O que este projeto faz?
-1. Atualiza os repositórios do sistema.
-2. Instala o motor do Docker e o servidor Nginx.
-3. Sobe um container Docker na porta 8080.
-4. Configura o Nginx para escutar na porta 80 e redirecionar (Proxy) para o container.
+* **Ansible:** Automação da configuração do host (IaC) e garantia de idempotência.
+* **Docker:** Conteinerização de serviços para portabilidade e isolamento de dependências.
+* **Nginx:** Configurado como Proxy Reverso, atuando como camada de segurança e gerenciamento de tráfego na porta 80.
+* **MySQL 8.0 (SQL):** Gerenciamento de banco de dados relacional com implementação de persistência via volumes.
+* **Adminer:** Interface web para administração de banco de dados, facilitando a execução de comandos SQL.
+* **Zabbix Agent:** Monitoramento de ativos implementado via container para evitar conflitos de bibliotecas no S.O. Host.
 
-##  Como executar
-1. Certifique-se de ter o Ansible instalado.
-2. Clone o repositório:
-   `git clone https://github.com/SEU_USUARIO/projeto-devops.git`
-3. Execute o Playbook:
-   `ansible-playbook -i ansible/inventory.ini ansible/playbook.yml --ask-become-pass`
+##  Arquitetura de Rede e Sistemas Distribuídos
+
+O projeto utiliza uma **Bridge Network** customizada no Docker (`rede_infra`), permitindo que os serviços se comuniquem via DNS interno pelo nome do container. Isso garante que o banco de dados MySQL não precise expor portas diretamente para a internet, sendo acessível apenas pelos serviços autorizados dentro da rede.
+
+##  Noções de SQL Aplicadas
+
+Como parte do laboratório, foram validadas operações essenciais de banco de dados:
+- **DDL:** Criação de tabelas para armazenamento de dados de candidatos e logs.
+- **DML:** Inserção de registros e consultas estruturadas (SELECT) para validação de integridade.
+
+##  Como Executar
+
+1. **Clonar o repositório:**
+   ```bash
+   git clone [https://github.com/arlomends/projeto-devops.git](https://github.com/arlomends/projeto-devops.git)
+   cd projeto-devops
 
 ##  Contato
 Arlon Montes - https://www.linkedin.com/in/arlon-montes-05745b1a1/

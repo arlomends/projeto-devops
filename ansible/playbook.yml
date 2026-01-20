@@ -81,6 +81,8 @@
         env:
           MYSQL_ROOT_PASSWORD: "senha_admin_vaga"
           MYSQL_DATABASE: "vaga_devops"
+        volumes:
+          - "/home/{{ ansible_user_id }}/db_data:/var/lib/mysql"
         restart_policy: always
 
     # 4. SUBIR O ADMINER (INTERFACE SQL)
@@ -93,5 +95,4 @@
         ports:
           - "8081:8080" 
 
-    volumes:
-      - /home/{{ ansible_user_id }}/db_data:/var/lib/mysql
+
