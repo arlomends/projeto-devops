@@ -51,26 +51,47 @@
         state: restarted
 
 
-    - name: Adicionar repositório oficial do Zabbix
-      apt_repository:
-        repo: deb https://repo.zabbix.com/zabbix/6.0/ubuntu focal main
+    # 1. CRIAR A REDE PRIMEIRO
+    - name: Criar rede interna para os containers
+      community.docker.docker_network:
+        name: rede_infra
         state: present
-        update_cache: yes
 
-    - name: Instalar Zabbix Agent
-      apt:
+    # 2. SUBIR O ZABBIX AGENT
+    - name: Subir Zabbix Agent via Docker
+      community.docker.docker_container:
         name: zabbix-agent
-        state: present
+        image: zabbix/zabbix-agent:6.4-ubuntu-latest
+        networks:
+          - name: rede_infra
+        ports:
+          - "10050:10050"
+        env:
+          ZBX_HOSTNAME: "MeuServidorLinux"
+          ZBX_SERVER_HOST: "127.0.0.1"
+        restart_policy: always
 
-    - name: Configurar o Zabbix Agent (Server IP)
-      lineinfile:
-        path: /etc/zabbix/zabbix_agentd.conf
-        regexp: '^Server='
-        line: 'Server=127.0.0.1,SEU_IP_ZABBIX_AQUI' # Coloque o IP do seu servidor Zabbix
-        state: present
+    # 3. SUBIR O BANCO DE DADOS
+    - name: Subir Banco de Dados MySQL
+      community.docker.docker_container:
+        name: db_projeto
+        image: mysql:8.0
+        networks:
+          - name: rede_infra
+        env:
+          MYSQL_ROOT_PASSWORD: "senha_admin_vaga"
+          MYSQL_DATABASE: "vaga_devops"
+        restart_policy: always
 
-    - name: Garantir que o Zabbix Agent esteja rodando
-      service:
-        name: zabbix-agent
-        state: started
-        enabled: yes
+    # 4. SUBIR O ADMINER (INTERFACE SQL)
+    - name: Subir Interface SQL (Adminer)
+      community.docker.docker_container:
+        name: adminer_web
+        image: adminer
+        networks:
+          - name: rede_infra
+        ports:
+          - "8081:8080" 
+
+    volumes:
+      - /home/{{ ansible_user_id }}/db_data:/var/lib/mysql
