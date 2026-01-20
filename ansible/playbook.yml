@@ -1,0 +1,50 @@
+---
+- name: Preparar Servidor com Docker e Proxy Nginx
+  hosts: local
+  become: yes  # Executa como sudo
+  
+  tasks:
+    - name: Atualizar cache do repositório
+      apt:
+        update_cache: yes
+
+    - name: Instalar Docker e Nginx
+      apt:
+        name: 
+          - docker.io
+          - nginx
+        state: latest
+        update_cache: yes
+
+    - name: Garantir que o Docker e Nginx estejam rodando
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - docker
+        - nginx
+
+    - name: Criar um container Docker (App de exemplo)
+      community.docker.docker_container:
+        name: minha-app
+        image: nginxdemos/hello
+        state: started
+        ports:
+          - "8080:80"
+
+    - name: Configurar Nginx como Proxy Reverso
+      copy:
+        content: |
+          server {
+              listen 80;
+              location / {
+                  proxy_pass http://localhost:8080;
+              }
+          }
+        dest: /etc/nginx/sites-available/default
+
+    - name: Reiniciar Nginx para aplicar mudanças
+      service:
+        name: nginx
+        state: restarted
