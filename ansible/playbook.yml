@@ -79,8 +79,8 @@
         networks:
           - name: rede_infra
         env:
-          MYSQL_ROOT_PASSWORD: "senha_admin_vaga"
-          MYSQL_DATABASE: "vaga_devops"
+          MYSQL_ROOT_PASSWORD: "senha_admin"
+          MYSQL_DATABASE: "lab_devops"
         volumes:
           - "/home/{{ ansible_user_id }}/db_data:/var/lib/mysql"
         restart_policy: always
